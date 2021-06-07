@@ -15,6 +15,7 @@
 # Use of stunnel
 ###################
 -w /usr/sbin/stunnel -p x -k stunnel
+-w /usr/bin/stunnel -p x -k stunnel
 
 ###################
 # Schedule jobs
@@ -82,6 +83,7 @@
 # Kernel parameters and modules
 ###################
 -w /etc/sysctl.conf -p wa -k sysctl
+-w /etc/sysctl.d -p wa -k sysctl
 -w /etc/modprobe.conf -p wa -k modprobe
 ###################
 
@@ -94,12 +96,13 @@
 -w /etc/security/namespace.conf -p wa -k pam
 -w /etc/security/namespace.init -p wa -k pam
 
+{% if etcpuppet is defined and etcpuppet.stat.exists %}
 ###################
 # Puppet (SSL)
 ###################
-## Error?
-#-w /etc/puppet/ssl -p wa -k puppet_ssl
+-w /etc/puppet/ssl -p wa -k puppet_ssl
 
+{% endif %}
 ###################
 # Postfix configuration
 ###################
@@ -138,4 +141,3 @@
 -w /sbin/poweroff -p x -k power
 -w /sbin/reboot -p x -k power
 -w /sbin/shutdown -p x -k power
-

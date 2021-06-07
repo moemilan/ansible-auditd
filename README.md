@@ -18,7 +18,7 @@ It was tested on the following versions:
 ### Operating systems
 
 * Ubuntu 16.04, 18.04, 20.04
-* Centos 7, 8
+* Centos/RHEL 7, 8
 * Suse 12.x, 15.x
 
 ## Example Playbook
@@ -34,7 +34,7 @@ For example
 
 ## Variables
 
-Nothing specific for now.
+**auditd_security_compliance** This variable allow the implementation of either the CIS or STIG security compliance. Default is 'stig' 
 
 ## Continuous integration
 
