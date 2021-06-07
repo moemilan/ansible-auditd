@@ -5,6 +5,8 @@ audisp_syslog_enable: true
 audisp_syslog_target: /var/log/audispd/audispd.log
 # audisp_syslog_target: @@remotesyslog
 
+# This variable controls which security compliance (cis or stig) audits rules should be applied
+auditd_security_compliance: stig
 
 auditd_log_tmp: true
 auditd_log_etc: true
@@ -35,13 +37,18 @@ auditd_rules_templates:
   - 10-audit-self
   - 40-base
   - 43-module-load
-  - 50-cis_l2
   - 60-neo23x0
   - 70-rootcmd
   - 71-nobodycmd
   - 90-extra
   - 91-extra-custom
   - 99-end
+
+auditd_cis_rules_templates:
+  - 50-cis_l2
+
+auditd_stig_rules_templates:
+  - 50-stig
 
 # load first
 # https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/security_guide/sec-audit_record_types
