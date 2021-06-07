@@ -70,12 +70,16 @@
         dest: "{{ auditd_confdir }}/{{ item }}.rules"
         mode: '0644'
         backup: "{{ auditd_backup | default(false) }}"
-      with_items: "{{ auditd_rules_templates }}"
+      with_items: "{{ auditd_rules_templates | union(auditd_{{ auditd_security_compliance }}_rules_templates) if auditd_security_compliance is defined esle auditd_rules_templates }}"
       notify:
         - augenrules
         - restart auditd
         - restart auditd - rhel7
         - restart auditd - suse
+
+    - name: configure privileged commands rule for STIG compliance
+      include_tasks: auditd-stig-privileged-commands
+      when: auditd_security_compliance == "stig"
 
     # /sbin/augenrules isn't present to generate /etc/audit/audit.rules
     - name: assemble rules into a single file
