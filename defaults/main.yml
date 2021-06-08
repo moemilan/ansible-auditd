@@ -1,12 +1,41 @@
 ---
 
 osquery_process_auditing: false
-audisp_syslog_enable: true
-audisp_syslog_target: /var/log/audispd/audispd.log
-# audisp_syslog_target: @@remotesyslog
+
+# Control if you want this role to manage auditd.conf
+enable_manage_auditd_conf: true
+
+# auditd.conf configuration paramaters
+# auditd.conf(5)
+auditd_log_file: /var/log/audit/audit.log
+auditd_log_format: RAW
+auditd_log_group: root
+auditd_flush: incremental
+auditd_freq: 50
+auditd_num_logs: 5
+auditd_disp_qos: lossless
+auditd_dispatcher: /sbin/audispd
+auditd_name_format: none
+auditd_name: {{ ansible_hostname }}
+auditd_max_log_file: 8
+auditd_max_log_file_action: rotate
+auditd_action_mail_acct: root
+auditd_space_left: 95
+auditd_space_left_action: email
+auditd_admin_space_left: 85
+auditd_admin_space_left_action: suspend
+auditd_disk_full_action: suspend
+auditd_disk_error_action: suspend
+auditd_tcp_listen_queue: 5
+auditd_tcp_max_per_addr: 1
+auditd_tcp_client_max_idle: 0
 
 # This variable controls which security compliance (cis or stig) audits rules should be applied
 auditd_security_compliance: stig
+
+# The TTY logging logs all keystrokes that users make except passwords.
+# The events are easily examined via the Linux Auditd Splunk app under 'User TTY' dashboard.
+enable_tty_logging: true
 
 auditd_log_tmp: true
 auditd_log_etc: true
@@ -49,6 +78,30 @@ auditd_cis_rules_templates:
 
 auditd_stig_rules_templates:
   - 50-stig
+
+auditd_buffer_size: 32768
+auditd_failure_mode: 1
+## ATTENTION! 2 implies any config changes require a system reboot (man auditctl)
+auditd_enable_flag: 2
+# auditd_enable_flag: 1
+# Paths to ignore for suid/sgid files
+auditd_sugid_ignored_paths:
+  - /proc
+  - /snap
+  # lxc, docker
+  - /var/lib/docker
+  - /var/lib/lxd
+
+auditd_set_loginuid_immutable: true
+auditd_reporting: true
+
+audisp_syslog_enable: true
+audisp_syslog_target: /var/log/audispd/audispd.log
+# audisp_syslog_target: @@remotesyslog
+
+audispd_reporting_template: audispd_report.sh
+audispd_reporting_dest: /var/tmp
+audispd_logrotate_days: 10
 
 # load first
 # https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/security_guide/sec-audit_record_types
@@ -124,28 +177,3 @@ auditd_exclusion_rules_redhat:
 
 # load at the end
 auditd_extra_rules: []
-
-auditd_buffer_size: 32768
-auditd_failure_mode: 1
-## ATTENTION! 2 implies any config changes require a system reboot (man auditctl)
-auditd_enable_flag: 2
-# auditd_enable_flag: 1
-# Paths to ignore for suid/sgid files
-auditd_sugid_ignored_paths:
-  - /proc
-  - /snap
-  # lxc, docker
-  - /var/lib/docker
-  - /var/lib/lxd
-
-# auditd.conf(5)
-auditd_conf_lineinfile:
-  # avoid 'dispatch err (pipe full) event lost'
-  - { re: '^disp_qos = .*', l: 'disp_qos = lossless' }
-
-auditd_set_loginuid_immutable: true
-
-auditd_reporting: true
-audispd_reporting_template: audispd_report.sh
-audispd_reporting_dest: /var/tmp
-audispd_logrotate_days: 10

@@ -99,17 +99,37 @@
         mode: '0644'
       when: not augenrules_file.stat.exists
 
+    # - name: Configure /etc/audit/auditd.conf
+    #   lineinfile:
+    #     dest: /etc/audit/auditd.conf
+    #     regexp: "{{ item.re }}"
+    #     line: "{{ item.l }}"
+    #     mode: '0640'
+    #   with_items: "{{ auditd_conf_lineinfile | default([]) }}"
+    #   notify:
+    #     - restart auditd
+    #     - restart auditd - rhel7
+    #     - restart auditd - suse
+
     - name: Configure /etc/audit/auditd.conf
-      lineinfile:
+      template:
+        src: auditd.conf.j2
         dest: /etc/audit/auditd.conf
-        regexp: "{{ item.re }}"
-        line: "{{ item.l }}"
         mode: '0640'
-      with_items: "{{ auditd_conf_lineinfile | default([]) }}"
       notify:
         - restart auditd
         - restart auditd - rhel7
         - restart auditd - suse
+      when: enable_manage_auditd_conf
+
+    - name: Configure PAM with TTY logging
+      lineinfile:
+        path: /etc/pam.d/password-auth-ac
+        line: "session    required pam_tty_audit.so enable=*"
+      when:
+        - ansible_distribution == "RedHat" or ansible_distribution == "CentOS"
+        - ansible_distribution_major_version >= "7"
+        - enable_tty_logging
 
     - name: Check if grub is present
       stat:
