@@ -34,9 +34,9 @@ For example
 
 ## Variables
 
-**enable_manage_auditd_conf** To manage auditd configuration file auditd.conf. Default values are set in reference to the STIG compliance
-**auditd_security_compliance** To allow the implementation of either the CIS or STIG security compliance. Default is 'stig'
-**enable_tty_logging** To log all keystrokes that users make except passwords
+ * **enable_manage_auditd_conf** To manage auditd configuration file auditd.conf. Default values are set in reference to the STIG compliance
+ * **auditd_security_compliance** To allow the implementation of either the CIS or STIG security compliance. Default is 'stig'
+ * **enable_tty_logging** To log all keystrokes that users make except passwords
 
 ## Continuous integration
 
