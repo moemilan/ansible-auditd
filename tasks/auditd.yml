@@ -64,13 +64,23 @@
       register: augenrules_file
       changed_when: false
 
+    - name: set a fact for STIG Compliance
+      set_fact:
+        sec_compliance_rules: "{{ auditd_stig_rules_templates }}"
+      when: auditd_security_compliance == 'stig'
+
+    - name: set a fact for CIS Compliance
+      set_fact:
+        sec_compliance_rules: "{{ auditd_cis_rules_templates }}"
+      when: auditd_security_compliance == 'cis'
+
     - name: configure audit system
       template:
         src: "{{ item }}.rules.j2"
         dest: "{{ auditd_confdir }}/{{ item }}.rules"
         mode: '0644'
         backup: "{{ auditd_backup | default(false) }}"
-      with_items: "{{ auditd_rules_templates | union(auditd_{{ auditd_security_compliance }}_rules_templates) if auditd_security_compliance is defined esle auditd_rules_templates }}"
+      with_items: "{{ auditd_rules_templates | union(sec_compliance_rules) }}"
       notify:
         - augenrules
         - restart auditd
@@ -78,7 +88,7 @@
         - restart auditd - suse
 
     - name: configure privileged commands rule for STIG compliance
-      include_tasks: auditd-stig-privileged-commands
+      include_tasks: auditd-stig-privileged-commands.yml
       when: auditd_security_compliance == "stig"
 
     # /sbin/augenrules isn't present to generate /etc/audit/audit.rules

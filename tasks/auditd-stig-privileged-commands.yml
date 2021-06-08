@@ -11,7 +11,7 @@
 
 - name: Adding privileged commands rules
   lineinfile:
-    path: "{{ auditd_manage_configuration_directory }}/50-stig.rules"
+    path: "{{ auditd_confdir }}/50-stig.rules"
     state: present
     line: -a always,exit -F path={{ item.1 }} -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=special-config-changes
   loop: "{{ priv_commands.results|subelements('stdout_lines') }}"
